@@ -2,20 +2,22 @@
   <section class="informatica-section">
     <div class="container">
       <div class="content">
-        <h1 class="title" ref="title">
-          ¿Qué es la Informática?
-          <div class="underline"></div>
-        </h1>
+        <div class="title-wrapper reveal-on-scroll" v-intersection>
+          <h1 class="title">
+            ¿Qué es la Informática?
+            <div class="underline"></div>
+          </h1>
+        </div>
 
         <div class="grid">
           <div class="text-content">
-            <p ref="paragraph1">
+            <p v-intersection class="reveal-on-scroll delay-100">
               La Informática es la ciencia que estudia el procesamiento automático de la información 
               mediante sistemas computacionales. Abarca el diseño, desarrollo y aplicación de software 
               y hardware para resolver problemas y optimizar procesos en diversos campos del conocimiento.
             </p>
             
-            <p ref="paragraph2">
+            <p v-intersection class="reveal-on-scroll delay-200">
               Esta disciplina fundamental combina principios matemáticos, lógica y creatividad para 
               impulsar la innovación tecnológica. La Informática es el motor detrás de la revolución 
               digital, permitiendo avances en áreas como la inteligencia artificial, el análisis de 
@@ -23,11 +25,12 @@
             </p>
           </div>
 
-          <div class="image-wrapper" ref="imageWrapper">
+          <div class="image-wrapper reveal-on-scroll delay-300" v-intersection>
             <img 
-              :src="'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/informatica.jpg-Oyw99BDl04cziQubKcK0l3xDYuBCdm.jpeg'" 
+              src="@/assets/images/informatica.jpg" 
               alt="Tecnología informática"
               class="feature-image"
+              loading="lazy"
             />
           </div>
         </div>
@@ -37,61 +40,38 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-
-const title = ref(null);
-const paragraph1 = ref(null);
-const paragraph2 = ref(null);
-const imageWrapper = ref(null);
-
-onMounted(() => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-  [title.value, paragraph1.value, paragraph2.value, imageWrapper.value].forEach((el, index) => {
-    if (el) {
-      el.style.setProperty('--delay', `${index * 0.2}s`);
-      observer.observe(el);
-    }
-  });
-});
+import vIntersection from '../directives/vIntersection';
 </script>
 
 <style scoped>
 .informatica-section {
-  min-height: 100vh;
-  color: #f8fafc;
-  padding: 4rem 1rem;
+  min-height: 80vh; /* Reduced height for better flow */
+  color: var(--color-text-primary);
+  padding: var(--spacing-xl) 0;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: var(--container-width);
   margin: 0 auto;
 }
 
 .content {
-  padding: 3rem 2rem;
+  padding: 0 var(--spacing-md);
 }
 
 .title {
   font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 3rem;
-  color: #ccc;
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-primary);
   position: relative;
 }
 
 .underline {
   width: 80px;
   height: 4px;
-  background: #38bdf8;
+  background: var(--color-accent-primary);
   margin: 1rem auto 0;
   border-radius: 2px;
 }
@@ -99,33 +79,32 @@ onMounted(() => {
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  gap: var(--spacing-xl);
   align-items: center;
 }
 
 .text-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--spacing-md);
 }
 
 .text-content p {
   font-size: 1.125rem;
   line-height: 1.8;
-  color: #cbd5e1;
+  color: var(--color-text-secondary);
 }
 
 .image-wrapper {
-  border-radius: 2rem;
+  border-radius: var(--border-radius-lg);
   overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6), 
-              0 6px 6px rgba(0, 0, 0, 0.4);
-  transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .image-wrapper:hover {
-  transform: scale(1.03); 
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.795); 
+  transform: scale(1.02); 
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
 }
 
 .feature-image {
@@ -141,41 +120,26 @@ onMounted(() => {
   filter: brightness(1.1); 
 }
 
-.title,
-.text-content p,
-.image-wrapper {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease var(--delay), transform 0.6s ease var(--delay);
-}
+/* Transitions controlled by directive class 'visible' */
+/* Removed custom transition classes in favor of global .reveal-on-scroll */
+/* .title-wrapper, .fade-element { ... }  <-- These are now handled by base.css */
 
-.title.visible,
-.text-content p.visible,
-.image-wrapper.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.delay-100 { transition-delay: 0.1s; }
+.delay-200 { transition-delay: 0.2s; }
+.delay-300 { transition-delay: 0.3s; }
 
 @media (max-width: 768px) {
   .informatica-section {
-    padding: 2rem 1rem;
-  }
-
-  .content {
-    padding: 2rem 1.5rem;
+    padding: var(--spacing-lg) 0;
   }
 
   .grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: var(--spacing-lg);
   }
 
   .title {
     font-size: 2rem;
-  }
-
-  .text-content p {
-    font-size: 1rem;
   }
 }
 </style>

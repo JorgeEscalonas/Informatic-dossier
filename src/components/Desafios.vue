@@ -1,12 +1,16 @@
 <template>
-  <section class="desafios-eticos" ref="sectionRef">
-    <h2 class="title">Desafíos Éticos</h2>
+  <section class="desafios-eticos">
+    <div class="title-container" v-intersection>
+      <h2 class="title">Desafíos Éticos</h2>
+    </div>
+    
     <div class="grid-container">
       <div 
         v-for="(desafio, index) in desafios" 
         :key="index" 
-        class="grid-item"
-        :class="{ 'visible': visibleItems[index], [`item-${index + 1}`]: true }"
+        class="grid-item reveal-on-scroll"
+        :class="[`item-${index + 1}`]"
+        v-intersection
         @mouseenter="rotarTarjeta"
         @mouseleave="resetearTarjeta"
       >
@@ -21,37 +25,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
-import { Shield, Eye, Brain, Users, Database, Globe, Lock, Briefcase, Code, Signal, Globe2, FileText } from 'lucide-vue-next'
+import { Shield, Eye, Brain, Users, Database, Globe, Lock, Briefcase, Code, Signal } from 'lucide-vue-next'
+import vIntersection from '../directives/vIntersection'
 
 const desafios = [
-  { icon: Shield, title: "Privacidad y Seguridad de Datos", description: "Proteger la información personal y los sistemas implica usar contraseñas seguras, cifrado de datos y controles de acceso adecuados. Además, es clave educar sobre riesgos como phishing, malware y mantener el software actualizado para prevenir amenazas cibernéticas." },
-  { icon: Eye, title: "Vigilancia y Libertad", description: "Equilibrar la seguridad pública con el derecho a la privacidad y la libertad individual en la era digital." },
-  { icon: Brain, title: "Inteligencia Artificial Ética", description: "Desarrollar y utilizar IA de manera responsable, evitando sesgos y garantizando la transparencia." },
-  { icon: Users, title: "Inclusión y Accesibilidad", description: "Asegurar que la tecnología sea accesible y beneficiosa para todos, independientemente de sus capacidades o recursos." },
-  { icon: Database, title: "Gestión de Big Data", description: "Manejar grandes volúmenes de datos de manera ética, respetando la privacidad y evitando su mal uso." },
-  { icon: Globe, title: "Impacto Ambiental", description: "Reducir la huella de carbono en la tecnología implica optimizar recursos, usar energías renovables y desarrollar software eficiente y responsable. Esto minimiza el impacto ambiental y promueve prácticas sostenibles tanto en hardware como en software." },
-  { icon: Lock, title: "Ciberseguridad y Delitos Informáticos", description: "Combatir el aumento de ataques cibernéticos, fraudes y la creación de software malicioso que amenaza a individuos y empresas." },
-  { icon: Briefcase, title: "Impacto Laboral de la Automatización", description: "Gestionar el desplazamiento de empleos tradicionales por la automatización y fomentar la reconversión laboral." },
-  { icon: Code, title: "Ética en el Desarrollo de Software", description: "Evitar prácticas de desarrollo poco éticas como el uso de dark patterns o la creación de productos adictivos." },
-  { icon: Signal, title: "Desinformación y Manipulación Digital", description: "Enfrentar la propagación de fake news, deepfakes y la manipulación de información a través de algoritmos." },
+  { icon: Shield, title: "Privacidad y Seguridad", description: "Proteger la información personal y los sistemas mediante cifrado y educación sobre ciberamenazas." },
+  { icon: Eye, title: "Vigilancia y Libertad", description: "Equilibrar la seguridad pública con el derecho a la privacidad individual." },
+  { icon: Brain, title: "IA Ética", description: "Desarrollar IA responsable, evitando sesgos y garantizando transparencia." },
+  { icon: Users, title: "Inclusión", description: "Tecnología accesible y beneficiosa para todos, sin barreras." },
+  { icon: Database, title: "Big Data", description: "Manejo ético de grandes volúmenes de datos." },
+  { icon: Globe, title: "Impacto Ambiental", description: "Optimizar recursos para reducir la huella de carbono digital." },
+  { icon: Lock, title: "Ciberseguridad", description: "Combatir ataques y fraudes que amenazan a la sociedad." },
+  { icon: Briefcase, title: "Automatización", description: "Gestionar el impacto laboral y fomentar la reconversión." },
+  { icon: Code, title: "Desarrollo Ético", description: "Evitar patrones oscuros y software adictivo." },
+  { icon: Signal, title: "Desinformación", description: "Combatir fake news y manipulación algorítmica." },
 ];
-
-const sectionRef = ref(null)
-const visibleItems = reactive(desafios.map(() => false))
-
-onMounted(() => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const index = [...sectionRef.value.querySelectorAll('.grid-item')].indexOf(entry.target)
-        if (index !== -1) visibleItems[index] = true
-      }
-    })
-  }, { threshold: 0.2 })
-
-  sectionRef.value.querySelectorAll('.grid-item').forEach((item) => observer.observe(item))
-})
 
 function rotarTarjeta(event) {
   const tarjeta = event.currentTarget
@@ -68,37 +56,47 @@ function resetearTarjeta(event) {
 
 <style scoped>
 .desafios-eticos {
-  padding: 2rem;
-  background-color: transparent;
+  padding: var(--spacing-lg) 0;
   min-height: 80vh;
 }
 
 .title {
-  color: #ccd6f6;
+  color: var(--color-text-primary);
   font-size: 2.5rem;
-  margin-bottom: 3rem;
+  margin-bottom: var(--spacing-lg);
   text-align: center;
   font-weight: bold;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
+}
+
+.title-container {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.title-container.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  max-width: 1100px;
+  gap: var(--spacing-md);
+  max-width: var(--container-width);
   margin: 0 auto;
 }
 
 .grid-item {
-  background-color: transparent;
-  padding: 1rem;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 2px solid;
+  background-color: rgba(17, 34, 64, 0.5); /* Glass effect base */
+  backdrop-filter: blur(5px);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-hover, rgba(136, 146, 176, 0.2));
   opacity: 0;
-  transform: translateY(50px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -110,75 +108,48 @@ function resetearTarjeta(event) {
   transform: translateY(0);
 }
 
-.item-1, .item-6, .item-11 {
-  grid-column: span 2;
-}
+/* Layout logic for first and last rows to center items if needed */
+
 
 .desafio-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.1rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-accent-primary);
+  transition: color var(--transition-normal);
 }
 
-.desafio-icon :deep(svg) {
-  color: #8892b0;
-  width: 35px;
-  height: 35px;
+.grid-item:hover .desafio-icon {
+  color: var(--color-accent-secondary);
 }
 
 .desafio-title {
   font-size: 1.25rem;
-  color: #ccd6f6;
+  color: var(--color-text-primary);
   font-weight: bold;
-  margin:  0.4rem 0.1rem 0.1rem 0.1rem;
+  margin-bottom: var(--spacing-xs);
 }
 
 .desafio-description {
   font-size: 0.95rem;
-  color: #ccc;
+  color: var(--color-text-secondary);
   line-height: 1.5;
-  font-weight: 300;
 }
 
-/* Hover sutil */
+/* Hover effects */
 .grid-item:hover {
-  transform: perspective(1000px) rotateX(5deg) rotateY(5deg) scale(1.02);
-  transition: transform 0.3s ease;
+  border-color: var(--color-accent-primary);
+  background-color: rgba(17, 34, 64, 0.8);
+  transform: translateY(-5px) scale(1.02); /* Ensure scale is present */
 }
 
 @media (max-width: 1024px) {
   .grid-container {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  .item-1, .item-6, .item-11 {
-    grid-column: span 1; 
-  }
 }
 
-/* Responsivo para móviles */
 @media (max-width: 768px) {
   .grid-container {
-    grid-template-columns: repeat(2, 1fr) !important; 
-  }
-
-  .section-title {
-    font-size: 1.5rem !important; 
-  }
-
-  .grid-item {
-    padding: 0.5rem !important; 
-  }
-
-  .desafio-title {
-    font-size: 1.25rem !important; 
-  }
-
-  .desafio-description {
-    font-size: 0.9rem !important; 
+    grid-template-columns: 1fr; 
   }
 }
-
-
 </style>
