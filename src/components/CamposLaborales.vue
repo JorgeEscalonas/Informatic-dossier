@@ -1,24 +1,26 @@
 <template>
-  <section class="campos-laborales" ref="sectionRef" :class="{ 'visible': isVisible }">
-    <h2 class="title">Campos Laborales</h2>
-    <div class="filtros">
-      <button 
-        v-for="categoria in categorias" 
-        :key="categoria" 
-        @click="filtrarPor(categoria)" 
-        :class="{ 'activo': categoriaActual === categoria }"
-        class="btn-filtro"
-      >
-        {{ categoria }}
-      </button>
+  <section class="campos-laborales">
+    <div class="title-wrapper reveal-on-scroll" v-intersection>
+      <h2 class="title">Campos Laborales</h2>
+      <div class="filtros">
+        <button 
+          v-for="categoria in categorias" 
+          :key="categoria" 
+          @click="filtrarPor(categoria)" 
+          :class="{ 'activo': categoriaActual === categoria }"
+          class="btn-filtro"
+        >
+          {{ categoria }}
+        </button>
+      </div>
     </div>
+
     <transition-group name="campo-list" tag="div" class="campos-grid">
       <div 
         v-for="(campo, index) in camposFiltrados" 
         :key="campo.titulo" 
-        class="campo-tarjeta"
-        :ref="el => { if (el) campoRefs[index] = el }"
-        :class="{ 'visible': campoVisible[index] }"
+        class="campo-tarjeta reveal-on-scroll"
+        v-intersection
         @mouseenter="rotarTarjeta"
         @mouseleave="resetearTarjeta"
       >
@@ -35,10 +37,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import { 
   Globe, Shield, BarChart, Brain, Smartphone, Cloud, Wifi, Blocks
 } from 'lucide-vue-next'
+import vIntersection from '../directives/vIntersection'
 
 const categorias = ['Todos', 'Desarrollo', 'Seguridad', 'Datos', 'IA']
 const categoriaActual = ref('Todos')
@@ -61,9 +64,6 @@ const camposFiltrados = computed(() => {
   return campos.value.filter(campo => campo.categoria === categoriaActual.value)
 })
 
-const campoRefs = ref([])
-const campoVisible = ref([])
-
 function filtrarPor(categoria) {
   categoriaActual.value = categoria
 }
@@ -79,68 +79,19 @@ function rotarTarjeta(event) {
 function resetearTarjeta(event) {
   event.currentTarget.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)'
 }
-
-const sectionRef = ref(null)
-const isVisible = ref(false)
-
-onMounted(() => {
-  const sectionObserver = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      isVisible.value = true
-      sectionObserver.disconnect()
-    }
-  }, { threshold: 0.2 })
-
-  if (sectionRef.value) {
-    sectionObserver.observe(sectionRef.value)
-  }
-
-  const cardObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const index = campoRefs.value.findIndex(ref => ref === entry.target)
-        if (index !== -1) {
-          campoVisible.value[index] = true
-        }
-      }
-    })
-  }, { threshold: 0.1 })
-
-  campoRefs.value.forEach(ref => {
-    if (ref) cardObserver.observe(ref)
-  })
-})
-
-watch(camposFiltrados, () => {
-  campoVisible.value = new Array(camposFiltrados.value.length).fill(false)
-  nextTick(() => {
-    campoRefs.value.forEach((ref, index) => {
-      if (ref && ref.getBoundingClientRect().top < window.innerHeight) {
-        campoVisible.value[index] = true
-      }
-    })
-  })
-})
 </script>
 
 <style scoped>
 .campos-laborales {
-  padding: 1.1rem;
-  background: transparent;
-  color: #fff;
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 1s ease, transform 1s ease;
+  padding: var(--spacing-xl) 0;
+  color: var(--color-text-primary);
 }
 
-.campos-laborales.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+/* .title-wrapper, .campo-tarjeta custom transitions replaced by global .reveal-on-scroll */
 
 .title {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-md);
   font-size: 2.5rem;
 }
 
@@ -148,85 +99,84 @@ watch(camposFiltrados, () => {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 3rem;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
 }
 
 .btn-filtro {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.5rem;
   background: transparent;
-  border: 2px solid #8892b0;
-  color: #8892b0;
+  border: 1px solid var(--color-text-secondary);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  border-radius: 2rem;
-  font-weight: bold;
+  border-radius: var(--border-radius-full);
+  font-weight: 500;
   transition: all 0.3s ease;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
 }
 
 .btn-filtro:hover, .btn-filtro.activo {
-  transform: scale(1.05);
-  background: #8892b0;
-  color: #fff;
+  background: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  color: var(--color-bg-primary);
+  transform: translateY(-2px);
 }
 
 .campos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  max-width: var(--container-width);
+  margin: 0 auto;
 }
 
 .campo-tarjeta {
-  background: transparent;
-  border: 2px solid #8892b0;
-  border-radius: 1rem;
+  background: rgba(17, 34, 64, 0.5);
+  border: 1px solid var(--color-border-hover, rgba(136, 146, 176, 0.2));
+  border-radius: var(--border-radius-md);
   overflow: hidden;
   transition: all 0.3s ease;
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.campo-tarjeta.visible {
-  opacity: 1;
-  transform: translateY(0);
+  /* Removed local opacity/transform to let reveal-on-scroll handle it */
+  backdrop-filter: blur(5px);
+  min-height: 200px;
 }
 
 .campo-contenido {
-  padding: 1rem;
+  padding: var(--spacing-md);
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
 .campo-icono {
-  font-size: 2rem;
-  margin-top: 0.1;
-  margin-bottom: 1rem;
-  color: #8892b0;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-accent-primary);
 }
 
 .campo-titulo {
   font-size: 1.25rem;
-  margin: 0.1rem;
-  color: #fff;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text-primary);
 }
 
 .campo-descripcion {
-  font-size: 0.9rem;
-  color: #ccc;
-  text-align: center;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
 }
 
-.campo-tarjeta {
-  transition: all 1s ease;
+/* List Transitions */
+.campo-list-enter-active,
+.campo-list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.campo-list-enter-from,
+.campo-list-leave-to {
   opacity: 0;
-  transform: translateY(30px);
+  transform: scale(0.9);
 }
-.campo-tarjeta.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-
 </style>

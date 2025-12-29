@@ -1,5 +1,6 @@
 <template>
   <div class="app">
+    <ThreeBackground />
     <div class="hero-section">
       <Hero />
     </div>
@@ -7,202 +8,187 @@
     <div class="content-wrapper">
       <Informatica />
       
-      <div class="decorative-section">
-        <img src="./components/brain.png" alt="" class="decorative-element brain" />
-        <img src="./components/security.png" alt="" class="decorative-element security" />
+      <!-- Decorative Elements Wrapper with pointer-events: none to allow clicks through -->
+      <div class="decorative-container">
+        <img 
+          src="@/assets/images/brain.png" 
+          alt="" 
+          class="decorative-element brain" 
+          v-intersection 
+          @mousemove="handle3DTilt"
+          @mouseleave="resetTilt"
+        />
+        <img 
+          src="@/assets/images/security.png" 
+          alt="" 
+          class="decorative-element security" 
+          v-intersection 
+          @mousemove="handle3DTilt"
+          @mouseleave="resetTilt"
+        />
         <Desafios />
       </div>
       
       <CodigoEtica />
       
-      <div class="decorative-section">
-        <img src="./components/cloud.png" alt="" class="decorative-element cloud" />
-        <img src="./components/router.png" alt="" class="decorative-element router" />
+      <div class="decorative-container">
+        <img 
+          src="@/assets/images/cloud.png" 
+          alt="" 
+          class="decorative-element cloud" 
+          v-intersection 
+          @mousemove="handle3DTilt"
+          @mouseleave="resetTilt"
+        />
+        <img 
+          src="@/assets/images/router.png" 
+          alt="" 
+          class="decorative-element router" 
+          v-intersection 
+          @mousemove="handle3DTilt"
+          @mouseleave="resetTilt"
+        />
         <CamposLaborales />
       </div>
       
-      <pie />
+      <Footer />
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import Hero from './components/Hero.vue'
-import Informatica from './components/Informatica.vue'
-import Desafios from './components/Desafios.vue'
-import CodigoEtica from './components/CodigoEtica.vue'
-import CamposLaborales from './components/CamposLaborales.vue'
-import pie from './components/footer.vue'
+import vIntersection from './directives/vIntersection'
 
-onMounted(() => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible')
-      } else {
-        entry.target.classList.remove('visible')
-      }
-    })
-  }, {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-  })
+// Lazy load components for better performance
+const Informatica = defineAsyncComponent(() => import('./components/Informatica.vue'))
+const Desafios = defineAsyncComponent(() => import('./components/Desafios.vue'))
+const CodigoEtica = defineAsyncComponent(() => import('./components/CodigoEtica.vue'))
+const CamposLaborales = defineAsyncComponent(() => import('./components/CamposLaborales.vue'))
+const Footer = defineAsyncComponent(() => import('./components/Footer.vue'))
+const ThreeBackground = defineAsyncComponent(() => import('./components/ThreeBackground.vue'))
 
-  document.querySelectorAll('.decorative-element').forEach(el => {
-    observer.observe(el)
-  })
-})
+// 3D Interaction Logic for floating elements
+const handle3DTilt = (e) => {
+  const el = e.currentTarget;
+  const rect = el.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  
+  const centerX = rect.width / 2;
+  const centerY = rect.height / 2;
+  
+  const rotateX = (y - centerY) / 10;
+  const rotateY = (centerX - x) / 10;
+  
+  el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.1)`;
+  el.style.zIndex = "101"; // Bring slightly more forward on hover
+};
+
+const resetTilt = (e) => {
+  const el = e.currentTarget;
+  el.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+  el.style.zIndex = "100";
+};
+
 </script>
 
 <style>
-:root {
-  --color-base: #0a192f;
-  --color-acento-1: #00ff88;
-  --color-acento-2: #00f7ff;
-  --color-texto: #ccd6f6;
-}
-
+/* Global adjustments to allow decorative elements to break out */
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: var(--color-base);
-  color: var(--color-texto);
-  margin: 0;
-  padding: 0;
   overflow-x: hidden;
 }
 
 .app {
-  max-width: 1200px;
+  max-width: var(--container-width);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--spacing-md);
+  position: relative;
 }
 
 .content-wrapper {
   position: relative;
+  z-index: 1; /* Content group */
 }
 
-.decorative-section {
+/* Container doesn't block clicks to things behind it */
+.decorative-container {
   position: relative;
-  margin-bottom: 60px;
+  pointer-events: none; 
 }
 
+/* But elements themselves DO accept interaction if we want to tilt them */
 .decorative-element {
   position: absolute;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 1s ease, transform 1s ease;
-  width: 80px;
-  height: auto;
-  z-index: 1;
+  transition: opacity var(--transition-slow), transform 0.1s ease-out; /* Fast tilt response */
+  z-index: 100; /* On top of everything */
+  pointer-events: auto; /* Allow mouse interaction */
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+  will-change: transform;
 }
 
+.decorative-element.visible {
+  opacity: 1 !important; /* Full opacity as requested */
+  transform: translateY(0);
+}
+
+/* Animations - separated from the 3D tilt to avoid conflicts */
+.decorative-element.visible:not(:hover) {
+  animation: float-3d 8s ease-in-out infinite;
+}
+
+/* Specific positioning - Bringing them closer to be visible on most screens */
 .brain {
-  top: -50px;
-  left: -90px;
-  width: 170px;
-  height: 160px;
+  top: -60px;
+  left: -100px;
+  width: 14rem;
 }
 
 .security {
-  top: 550px;
-  right: -200px;
-  width: 250px;
-  height: 250px;
+  top: 10%;
+  right: -120px;
+  width: 16rem;
 }
 
 .cloud {
-  top: -50px;
-  left: -30px;
-  width: 180px;
+  top: -100px;
+  left: -110px;
+  width: 15rem;
 }
 
 .router {
   bottom: -40px;
-  right: -115px;
-  width: 150px;
-  height: 140px;
+  right: -100px;
+  width: 13rem;
 }
 
-.decorative-element.visible {
-  opacity: 1;
-  transform: translateY(0);
+@keyframes float-3d {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(2deg); }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-10px) rotate(2deg);
-  }
-  75% {
-    transform: translateY(5px) rotate(-2deg);
-  }
+@media (max-width: 1600px) {
+  /* On medium-large screens, tuck them in even more */
+  .brain { left: -50px; width: 10rem; }
+  .security { right: -60px; width: 12rem; }
+  .cloud { left: -60px; width: 11rem; }
+  .router { right: -50px; width: 10rem; }
 }
 
-.decorative-element.visible {
-  animation: float 8s ease-in-out infinite;
-}
-
-h1, h2, h3 {
-  margin-bottom: 20px;
-}
-
-.seccion {
-  margin-bottom: 60px;
-  position: relative;
-  z-index: 2;
-}
-
-.btn {
-  background-color: var(--color-acento-1);
-  color: var(--color-base);
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn:hover {
-  background-color: var(--color-acento-2);
-  box-shadow: 0 0 10px var(--color-acento-2);
-}
-
-.tarjeta {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 20px;
-  transition: all 0.3s ease;
-}
-
-.tarjeta:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 247, 255, 0.3);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
+  /* On screens smaller than the container, hide them or move them behind */
   .decorative-element {
-    width: 60px; 
+    opacity: 0.3 !important; /* Make them very subtle if they overlap content */
+    z-index: -1; /* Move behind content */
   }
-  
+}
 
-  .brain, .globe {
-    left: -20px;
-  }
-  
-  .security, .laptop, .router {
-    right: -20px;
+@media (max-width: 1024px) {
+  .decorative-element {
+    display: none; /* Hide for tablets/mobile */
   }
 }
 </style>

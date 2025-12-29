@@ -15,17 +15,17 @@ const currentYear = ref(new Date().getFullYear());
 <style scoped>
 .footer {
   background-color: transparent;
-  color: #8892b0;
-  padding: 4rem 2rem 2rem;
-  font-family: 'Inter', sans-serif;
+  color: var(--color-text-secondary);
+  padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md);
+  font-family: var(--font-sans);
 }
 
 .footer-bottom {
-  margin-top: 2rem;
+  margin-top: var(--spacing-md);
   text-align: center;
   font-size: 0.9rem;
-  color: #8892b0;
-  border-top: 1px solid #1d2d50;
-  padding-top: 2rem;
+  color: var(--color-text-secondary);
+  border-top: 1px solid rgba(136, 146, 176, 0.1);
+  padding-top: var(--spacing-md);
 }
 </style>
