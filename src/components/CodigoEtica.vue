@@ -3,7 +3,6 @@
     <div class="container">
       <div class="title-wrapper reveal-on-scroll" v-intersection>
         <h2 class="title">Código de Ética Profesional</h2>
-        <p class="subtitle">Nuestros pilares fundamentales en el desarrollo tecnológico</p>
       </div>
 
       <div class="code-window reveal-on-scroll" v-intersection>
@@ -142,7 +141,7 @@ const lineCount = computed(() => {
 }
 
 .code-content {
-  padding: 2.5rem; /* Increased padding */
+  padding: 2rem; /* Increased padding */
   display: flex;
   gap: 2rem;
   background: linear-gradient(to bottom right, #0d1117, #161b22);
@@ -155,7 +154,7 @@ const lineCount = computed(() => {
   user-select: none;
   text-align: right;
   font-family: var(--font-mono);
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 2;
   border-right: 1px solid rgba(136, 146, 176, 0.1);
   padding-right: 1.5rem;
