@@ -1,82 +1,44 @@
-# Informatic-dossier
+# Informática Dossier
 
-Este proyecto es una landing page sobre la informática, desarrollada principalmente con Vue 3 y Vite. A continuación, se explican los pasos para configurar y trabajar con este proyecto.
+Este proyecto es una plataforma interactiva diseñada para presentar conceptos fundamentales, desafíos éticos y campos laborales de la carrera de Informática. La aplicación ha sido desarrollada con un enfoque en la experiencia de usuario (UX) moderna, utilizando efectos visuales avanzados y animaciones fluidas para destacar la importancia de la tecnología en la sociedad actual.
 
-## Requisitos Previos
+## Características Principales
 
-Antes de comenzar, asegúrate de tener instalado lo siguiente en tu sistema:
+### Interfaz Interactiva
 
-- [Node.js](https://nodejs.org/) (versión recomendada: 18.x o superior)
-- [Git](https://git-scm.com/) (para clonar el repositorio si es necesario)
-- [VSCode](https://code.visualstudio.com/) (opcional, pero recomendado)
-  - Extensión recomendada: [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
-  - Deshabilita Vetur si está activado para evitar conflictos
+- **Fondo Fluido**: Implementación de una simulación de partículas en 3D utilizando Three.js que reacciona de manera sutil al movimiento del usuario.
+- **Elementos Decorativos 3D**: Imágenes con efecto de inclinación (tilt) que responden a la interacción del mouse, manteniendo una disposición coherente dentro del flujo de la página.
+- **Transiciones de Scroll**: Sistema de animaciones unificado que utiliza un Intersection Observer personalizado para revelar elementos con efectos de desenfoque y escalado cinematográfico.
 
-## Instalación y Configuración
+### Secciones Especializadas
 
-Sigue estos pasos para instalar y ejecutar el proyecto en tu entorno local.
+- **Introducción a la Informática**: Definiciones claras y concisas con soporte visual optimizado.
+- **Desafíos Éticos**: Grilla interactiva que detalla los retos contemporáneos del sector informático.
+- **Código de Ética**: Ventana de edición de código estilizada que presenta el manifiesto profesional con una estética moderna y profesional.
+- **Campos Laborales**: Galería filtrable de áreas de especialización dentro de la informática.
 
-### 1. Clonar el Repositorio
+## Tecnologías Utilizadas
 
-Si aún no tienes el código, clónalo con Git:
+- **Framework**: Vue.js 3 (Composition API)
+- **Gráficos 3D**: Three.js
+- **Iconografía**: Lucide Vue Next
+- **Estilos**: Vanilla CSS con arquitectura basada en variables para consistencia temática
+- **Herramientas de Construcción**: Vite
 
-```sh
-git clone https://github.com/usuario/informatic-dossier.git
-cd informatic-dossier
-```
+## Estándares de Desarrollo
 
-### 2. Instalar Dependencias
+La aplicación ha sido refactorizada siguiendo los principios SOLID para garantizar un código mantenible y escalable. Se ha implementado:
 
-Ejecuta el siguiente comando para instalar todas las dependencias necesarias:
+- **Carga Diferida (Lazy Loading)**: Los componentes pesados se cargan de forma asíncrona para mejorar el tiempo de respuesta inicial.
+- **Optimización de Activos**: Gestión organizada de imágenes y recursos multimedia.
+- **Directivas Personalizadas**: Reutilización de lógica de interacción mediante directivas Vue para reducir la redundancia de código.
 
-```sh
-npm install
-```
+## Instalación y Uso
 
-### 3. Iniciar el Servidor de Desarrollo
+1. Clonar el repositorio.
+2. Ejecutar `npm install` para instalar las dependencias.
+3. Ejecutar `npm run dev` para iniciar el servidor de desarrollo local.
+4. Ejecutar `npm run build` para generar la versión de producción.
 
-Para ejecutar el proyecto en modo de desarrollo y ver los cambios en tiempo real, usa:
-
-```sh
-npm run dev
-```
-
-Esto iniciará un servidor local, normalmente accesible en `http://localhost:5173/`.
-
-### 4. Estructura del Proyecto
-
-El proyecto sigue una estructura estándar de Vue 3 con Vite:
-
-- **`src/`**: Código fuente del proyecto (componentes, estilos, lógica principal).
-- **`src/components/`**: Componentes reutilizables de Vue.
-- **`public/`**: Archivos estáticos como imágenes y favicons.
-- **`package.json`**: Contiene las dependencias del proyecto y los scripts disponibles.
-- **`vite.config.js`**: Configuración de Vite.
-
-### 5. Construir el Proyecto para Producción
-
-Cuando el proyecto esté listo para su despliegue, genera una versión optimizada con:
-
-```sh
-npm run build
-```
-
-Esto creará una carpeta `dist/` con los archivos listos para subir a un servidor o plataforma de hosting.
-
-### 6. Vista Previa del Proyecto Construido
-
-Para verificar cómo se verá el proyecto en producción antes de subirlo, puedes ejecutar:
-
-```sh
-npm run preview
-```
-
-Esto iniciará un servidor local con la versión optimizada del proyecto.
-
-## Contribución
-
-Si deseas contribuir al proyecto:
-1. Haz un fork del repositorio.
-2. Crea una nueva rama (`git checkout -b nueva-funcionalidad`).
-3. Realiza tus cambios y haz un commit (`git commit -m "Añadir nueva funcionalidad"`).
-4. Envía un pull request.
+---
+Proyecto desarrollado como una demostración técnica de integración de interfaces web avanzadas y conceptos de la carrera de Informática.
